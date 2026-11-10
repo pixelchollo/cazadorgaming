@@ -3,236 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PixelChollo | Juegos Gratis y Ofertas Gaming</title>
+  <title>PixelChollo | Juegos Gratis y Ofertas Gaming en Tiempo Real</title>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6788146281468184" crossorigin="anonymous"></script>
 
   <style>
     :root {
-      --bg-color: #0b0f19;
-      --card-bg: #151c2c;
+      --bg-color: #080c14;
+      --card-bg: #111827;
+      --card-hover: #1f2937;
       --accent: #10b981;
-      --accent-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.25);
       --amazon-orange: #ff9900;
-      --amazon-hover: #e68a00;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #1e293b;
+      --amazon-glow: rgba(255, 153, 0, 0.25);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+      --tag-bg: #374151;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    
+    body {
+      background-color: var(--bg-color);
+      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-color) 70%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
     header {
-      background-color: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      padding: 25px 20px;
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 35px 20px;
       text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    header h1 { color: var(--accent); font-size: 2.2rem; margin-bottom: 5px; }
-    header p { color: var(--text-muted); font-size: 1rem; }
+
+    header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      font-weight: 400;
+    }
 
     main {
       flex: 1;
-      max-width: 1200px;
+      max-width: 1280px;
       width: 100%;
       margin: 0 auto;
-      padding: 30px 20px;
+      padding: 40px 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
     }
 
     .section-title {
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      border-left: 4px solid var(--accent);
-      padding-left: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
       color: var(--text-main);
     }
 
-    .section-title.amazon {
-      border-left-color: var(--amazon-orange);
-      margin-top: 40px;
+    .section-title.amazon-title {
+      margin-top: 50px;
     }
 
     .loading {
       text-align: center;
-      padding: 30px;
+      padding: 60px;
       color: var(--text-muted);
+      font-size: 1.1rem;
     }
 
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
     }
 
     .game-card {
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
+
     .game-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px);
       border-color: var(--accent);
+      box-shadow: 0 12px 24px -10px var(--accent-glow);
     }
+
     .game-card.amazon-card:hover {
       border-color: var(--amazon-orange);
+      box-shadow: 0 12px 24px -10px var(--amazon-glow);
+    }
+
+    .img-container {
+      position: relative;
+      width: 100%;
+      height: 165px;
+      overflow: hidden;
     }
 
     .game-card img {
       width: 100%;
-      height: 150px;
+      height: 100%;
       object-fit: cover;
-      background-color: #1e293b;
+      transition: transform 0.5s ease;
     }
+
+    .game-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .badge-free {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .badge-platform {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
     .game-info {
-      padding: 15px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       flex: 1;
-      justify-content: space-between;
-    }
-    .game-info h3 { font-size: 1rem; margin-bottom: 8px; line-height: 1.3; }
-    .game-info p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px; flex: 1; }
-    
-    .btn {
-      display: block;
-      background-color: var(--accent);
-      color: #fff;
-      text-align: center;
-      padding: 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-    .btn:hover { background-color: var(--accent-hover); }
-
-    .btn-amazon {
-      background-color: var(--amazon-orange);
-      color: #000;
-    }
-    .btn-amazon:hover { background-color: var(--amazon-hover); }
-
-    footer {
-      background-color: var(--card-bg);
-      border-top: 1px solid var(--border-color);
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 40px;
-    }
-    footer a { color: var(--accent); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>PixelChollo</h1>
-    <p>Juegos gratis y las mejores ofertas gaming recomendadas</p>
-  </header>
-
-  <main>
-    <!-- SECCIÓN 1: JUEGOS GRATIS (SE ACTUALIZA SOLO VÍA API) -->
-    <h2 class="section-title">🎮 Juegos Gratis en Tiempo Real</h2>
-    <div id="loading" class="loading">Buscando chollos en directo...</div>
-    <div id="games-container" class="games-grid"></div>
-
-    <!-- SECCIÓN 2: ACCESORIOS Y HARDWARE GAMING (AFILIADOS AMAZON) -->
-    <h2 class="section-title amazon">🛒 Ofertas Gaming Recomendadas en Amazon</h2>
-    <div class="games-grid">
-      
-      <!-- Producto 1 -->
-      <div class="game-card amazon-card">
-        <img src="https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=500&q=80" alt="Mando Gaming">
-        <div class="game-info">
-          <h3>Mando Inalámbrico PC / Consola</h3>
-          <p>Ideal para tus sesiones de juego con la mejor ergonomía y respuesta inmediata.</p>
-          <a href="https://www.amazon.es/?tag=naiara003-21" target="_blank" rel="noopener noreferrer" class="btn btn-amazon">Ver Oferta en Amazon</a>
-        </div>
-      </div>
-
-      <!-- Producto 2 -->
-      <div class="game-card amazon-card">
-        <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&q=80" alt="Auriculares Gaming">
-        <div class="game-info">
-          <h3>Auriculares Gaming 7.1 Surround</h3>
-          <p>Excelente calidad de audio y micrófono con cancelación de ruido pasiva.</p>
-          <a href="https://www.amazon.es/?tag=naiara003-21" target="_blank" rel="noopener noreferrer" class="btn btn-amazon">Ver Oferta en Amazon</a>
-        </div>
-      </div>
-
-      <!-- Producto 3 -->
-      <div class="game-card amazon-card">
-        <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500&q=80" alt="Teclado Mecánico">
-        <div class="game-info">
-          <h3>Teclado Mecánico RGB Compacto</h3>
-          <p>Teclas de respuesta rápida e iluminación personalizable para setups gaming.</p>
-          <a href="https://www.amazon.es/?tag=naiara003-21" target="_blank" rel="noopener noreferrer" class="btn btn-amazon">Ver Oferta en Amazon</a>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer>
-    <p>&copy; 2026 PixelChollo. Como Afiliado de Amazon, obtengo ingresos por las compras adscritas que cumplen los requisitos aplicables. | <a href="privacidad.html">Política de Privacidad y Cookies</a></p>
-  </footer>
-
-  <!-- SCRIPT API GAMERPOWER -->
-  <script>
-    async function fetchGames() {
-      const container = document.getElementById('games-container');
-      const loading = document.getElementById('loading');
-      
-      const proxies = [
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
-
-      let data = null;
-
-      for (let proxy of proxies) {
-        try {
-          const response = await fetch(proxy + encodeURIComponent('https://www.gamerpower.com/api/giveaways'));
-          if (response.ok) {
-            data = await response.json();
-            break;
-          }
-        } catch (e) {
-          console.log('Probando proxy secundario...');
-        }
-      }
-
-      loading.style.display = 'none';
-
-      if (data && Array.isArray(data) && data.length > 0) {
-        data.slice(0, 12).forEach(game => {
-          const card = document.createElement('div');
-          card.className = 'game-card';
-          card.innerHTML = `
-            <img src="${game.image}" alt="${game.title}" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80'">
-            <div class="game-info">
-              <h3>${game.title}</h3>
-              <p>${game.description ? game.description.substring(0, 80) : '¡Consigue este juego totalmente gratis!'}...</p>
-              <a href="${game.open_giveaway_url}" target="_blank" rel="noopener noreferrer" class="btn">Obtener Gratis</a>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-      } else {
-        container.innerHTML = '<div style="text-align: center; grid-column: 1/-1; color: #94a3b8;">No se han podido cargar los juegos en este momento.</div>';
-      }
     }
 
-    fetchGames();
-  </script>
-
-</body>
-</html>
+    .game-info h3 {
