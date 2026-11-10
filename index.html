@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PixelChollo | Juegos Gratis y Ofertas Gaming en Tiempo Real</title>
 
-  <!-- CÓDIGO DE GOOGLE ADSENSE -->
+  <!-- 1. CÓDIGO DE GOOGLE ADSENSE (Ubicado correctamente en el <head>) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6788146281468184" crossorigin="anonymous"></script>
 
   <style>
@@ -123,12 +123,12 @@
     <p>&copy; 2026 PixelChollo. Todos los derechos reservados. | <a href="privacidad.html">Política de Privacidad y Cookies</a></p>
   </footer>
 
+  <!-- 2. SCRIPT DE CARGA AUTOMÁTICA DE JUEGOS (GamerPower) -->
   <script>
     async function fetchGames() {
       const container = document.getElementById('games-container');
       const loading = document.getElementById('loading');
       
-      // Lista de servidores proxy alternativos para asegurar que la API funcione siempre
       const proxies = [
         'https://api.allorigins.win/raw?url=',
         'https://corsproxy.io/?'
