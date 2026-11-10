@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -128,13 +128,12 @@
       const loading = document.getElementById('loading');
       
       try {
-        // Petición a la API pública de GamerPower usando un proxy CORS para evitar bloqueos
-        const response = await fetch('https://corsproxy.io/?https://www.gamerpower.com/api/giveaways');
-        const games = await response.json();
+        const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.gamerpower.com/api/giveaways'));
+        if (!response.ok) throw new Error('Error en la respuesta de la red');
         
+        const games = await response.json();
         loading.style.display = 'none';
 
-        // Mostramos las primeras 20 ofertas
         games.slice(0, 20).forEach(game => {
           const card = document.createElement('div');
           card.className = 'game-card';
@@ -142,14 +141,14 @@
             <img src="${game.image}" alt="${game.title}">
             <div class="game-info">
               <h3>${game.title}</h3>
-              <p>${game.description.substring(0, 90)}...</p>
+              <p>${game.description ? game.description.substring(0, 90) : ''}...</p>
               <a href="${game.open_giveaway_url}" target="_blank" rel="noopener noreferrer" class="btn">Obtener Gratis</a>
             </div>
           `;
           container.appendChild(card);
         });
       } catch (error) {
-        loading.textContent = 'Error al cargar los juegos. Por favor, recarga la página.';
+        loading.textContent = 'Error al cargar las ofertas. Por favor, recarga la página.';
         console.error('Error fetching games:', error);
       }
     }
