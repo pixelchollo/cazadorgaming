@@ -293,56 +293,115 @@
     <p>&copy; 2026 PixelChollo. En calidad de Afiliado de Amazon, obtengo ingresos por las compras adscritas que cumplen los requisitos aplicables. | <a href="privacidad.html">Política de Privacidad</a></p>
   </footer>
 
-  <!-- SCRIPT DE API GAMERPOWER CON PROXIES REDUNDANTES -->
+ <!-- SCRIPT DE API GAMERPOWER CON CACHÉ Y RESPALDO ANTI-FALLOS -->
   <script>
-    async function fetchGames() {
+    async function fetchWithTimeout(url, timeout = 4500) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(id);
+        return response;
+      } catch (e) {
+        clearTimeout(id);
+        throw e;
+      }
+    }
+
+    function renderGames(gamesList) {
       const container = document.getElementById('games-container');
+      container.innerHTML = '';
+
+      gamesList.slice(0, 12).forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const platform = game.platforms ? game.platforms.split(',')[0] : 'PC';
+        
+        card.innerHTML = `
+          <div class="img-container">
+            <span class="badge-tag">GRATIS</span>
+            <span class="badge-platform">${platform}</span>
+            <img src="${game.image}" alt="${game.title}" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80'">
+          </div>
+          <div class="card-info">
+            <h3>${game.title}</h3>
+            <p>${game.description ? game.description.substring(0, 85) + '...' : '¡Consigue este juego totalmente gratis por tiempo limitado!'}</p>
+            <a href="${game.open_giveaway_url}" target="_blank" rel="noopener noreferrer" class="btn">Conseguir Gratis ↗</a>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function fetchGames() {
       const loading = document.getElementById('loading');
+      const targetUrl = 'https://www.gamerpower.com/api/giveaways';
       
       const proxies = [
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
+        'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(targetUrl),
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl),
+        'https://thingproxy.freeboard.io/fetch/' + targetUrl
       ];
 
       let data = null;
 
-      for (let proxy of proxies) {
+      for (let proxyUrl of proxies) {
         try {
-          const response = await fetch(proxy + encodeURIComponent('https://www.gamerpower.com/api/giveaways'));
+          const response = await fetchWithTimeout(proxyUrl);
           if (response.ok) {
-            data = await response.json();
-            break;
+            const json = await response.json();
+            if (Array.isArray(json) && json.length > 0) {
+              data = json;
+              // Guardamos copia en caché por si otro día fallan los servidores
+              localStorage.setItem('pixelchollo_games', JSON.stringify(data));
+              break;
+            }
           }
         } catch (e) {
-          console.log('Probando servidor alternativo...');
+          console.log('Probando siguiente servidor...');
         }
       }
 
       loading.style.display = 'none';
 
-      if (data && Array.isArray(data) && data.length > 0) {
-        data.slice(0, 12).forEach(game => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          const platform = game.platforms ? game.platforms.split(',')[0] : 'PC';
-          
-          card.innerHTML = `
-            <div class="img-container">
-              <span class="badge-tag">GRATIS</span>
-              <span class="badge-platform">${platform}</span>
-              <img src="${game.image}" alt="${game.title}" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80'">
-            </div>
-            <div class="card-info">
-              <h3>${game.title}</h3>
-              <p>${game.description ? game.description.substring(0, 85) + '...' : '¡Consigue este juego totalmente gratis por tiempo limitado!'}</p>
-              <a href="${game.open_giveaway_url}" target="_blank" rel="noopener noreferrer" class="btn">Conseguir Gratis ↗</a>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-      } else {
-        container.innerHTML = '<div style="text-align: center; grid-column: 1/-1; color: #9ca3af;">No se han podido cargar los juegos en este momento.</div>';
+      // 1. Si cargó desde internet, los mostramos
+      if (data) {
+        renderGames(data);
+        return;
       }
+
+      // 2. Si fallaron los servidores, miramos si hay juegos guardados de antes
+      const cached = localStorage.getItem('pixelchollo_games');
+      if (cached) {
+        renderGames(JSON.parse(cached));
+        return;
+      }
+
+      // 3. Respaldo fijo de emergencia para que nunca salga vacío
+      const fallbackGames = [
+        {
+          title: 'Juegos Gratis Semanales en Epic Games Store',
+          platforms: 'Epic Games',
+          image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&q=80',
+          description: 'Reclama los títulos gratuitos de esta semana en Epic Games Store y quédatelos para siempre.',
+          open_giveaway_url: 'https://store.epicgames.com/es-ES/free-games'
+        },
+        {
+          title: 'Promociones y Juegos Free-to-Keep en Steam',
+          platforms: 'Steam',
+          image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=500&q=80',
+          description: 'Explora las ofertas al 100% de descuento y los juegos gratuitos activos hoy en Steam.',
+          open_giveaway_url: 'https://store.steampowered.com/genre/Free%20to%20Play/'
+        },
+        {
+          title: 'Recompensas y Juegos Incluidos en Prime Gaming',
+          platforms: 'Amazon / PC',
+          image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=500&q=80',
+          description: 'Descarga juegos completos para PC y contenido exclusivo incluido con tu suscripción.',
+          open_giveaway_url: 'https://gaming.amazon.com/'
+        }
+      ];
+      renderGames(fallbackGames);
     }
 
     fetchGames();
